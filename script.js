@@ -481,72 +481,6 @@ function handleMobileFooterLayout() {
   window.addEventListener('resize', updateFooterLayout);
 }
 
-// Handle contact form submission
-document.addEventListener("DOMContentLoaded", function () {
-  const contactForm = document.getElementById("contact-form");
-  if (contactForm) {
-    contactForm.addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const submitButton = this.querySelector('button[type="submit"]');
-      const originalButtonText = submitButton.innerHTML;
-
-      try {
-        // Disable the submit button and show loading state
-        submitButton.disabled = true;
-        submitButton.innerHTML =
-          '<i class="fas fa-spinner fa-spin"></i> Sending...';
-
-        // Get form data
-        const formData = new FormData(this);
-
-        // Send form data to FormSubmit
-        const response = await fetch(this.action, {
-          method: "POST",
-          body: formData,
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (response.ok) {
-          // Show success message near the button
-          const successMessage = document.createElement("div");
-          successMessage.className = "form-success-message";
-          successMessage.textContent =
-            "Thanks for your message! I will get back to you soon.";
-
-          // Insert after the submit button
-          const submitButton = this.querySelector('button[type="submit"]');
-          submitButton.parentNode.insertBefore(
-            successMessage,
-            submitButton.nextSibling
-          );
-
-          // Reset form
-          this.reset();
-
-          // Remove message after 5 seconds
-          setTimeout(() => {
-            successMessage.remove();
-          }, 5000);
-        } else {
-          throw new Error("Form submission failed");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        alert(
-          "Oops! Something went wrong. Please try again later or contact me directly at connect@subhadipghosh.co.in"
-        );
-      } finally {
-        // Re-enable the submit button and restore original text
-        submitButton.disabled = false;
-        submitButton.innerHTML = originalButtonText;
-      }
-    });
-  }
-});
-
 // Window resize handler for mobile responsiveness
 window.addEventListener('resize', function() {
   fixMobileViewport();
@@ -753,4 +687,62 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 200);
 });
 
+// Disable right-click, keyboard shortcuts, and browser inspection
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    alert('Right-click is disabled to protect the content.');
+});
 
+// Disable keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+    if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) ||
+        (e.ctrlKey && (e.key === 'U' || e.key === 'u'))
+    ) {
+        e.preventDefault();
+        alert('This action is disabled to protect the content.');
+    }
+});
+
+// Prevent opening developer tools
+(function() {
+    // Prevent opening developer tools
+    const devtools = /./;
+    devtools.toString = function() {
+        this.opened = true;
+    }
+    console.log('%c', devtools);
+    devtools.opened = false;
+
+    setInterval(function() {
+        if (devtools.opened) {
+            alert('Developer tools are disabled to protect the content.');
+            window.location.reload();
+        }
+    }, 1000);
+})();
+
+// Prevent taking screenshots
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'PrintScreen') {
+        navigator.clipboard.writeText('');
+        alert('Screenshots are disabled to protect the content.');
+    }
+});
+
+// Prevent drag and drop
+document.addEventListener('dragstart', (e) => {
+    e.preventDefault();
+});
+
+// Prevent text selection
+document.addEventListener('selectstart', (e) => {
+    e.preventDefault();
+});
+
+// Prevent image dragging
+document.querySelectorAll('img').forEach(img => {
+    img.setAttribute('draggable', 'false');
+});
